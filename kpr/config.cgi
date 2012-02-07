@@ -1,3 +1,6 @@
+use strict;
+use warnings;
+
 # -*- Mode: Perl -*-
 #
 # 1. Configure section

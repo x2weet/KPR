@@ -3,12 +3,14 @@
 # KPR instance sample file
 #
 #  Author: Ryota Wada
-#    Date: Sun Oct 23 19:41:35 2011.
+#    Date: Wed Feb  8 08:23:13 2012.
 
 BEGIN {
     unshift @INC, './lib/', './site-lib/';
 }
 use strict;
+use warings;
+
 use KPR;
 require 'config.cgi';
 $ENV{TZ} = "JST-9";

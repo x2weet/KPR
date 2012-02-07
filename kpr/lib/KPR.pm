@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Mon Feb  6 13:03:12 2012.
+#    Date: Wed Feb  8 05:12:48 2012.
 #
 # ----
 
@@ -19,8 +19,9 @@ my $LF = "\x0A";
 my $CRLF = $CR.$LF;
 my $q = new CGI;
 my $site_title = '苺の育成';
-my $Header = <<'__HERE__';
-<!DOCTYPE html PUBLIC "ISO/IEC 15445:2000//DTD HTML//EN">
+my $doctype = q(<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">);
+
+my $Header = $doctype . <<'__HERE__';
 <html lang="ja">
 <head>
   <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
@@ -252,8 +253,7 @@ sub create_file {
         die("");
     }
 
-    my $buff = <<"__HERE__";
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+    my $buff = $doctype. <<"__HERE__";
 <html lang="ja">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
@@ -379,8 +379,7 @@ __HERE__
 
     my $tree = $toc;                    # copy
 	
-    my $buff = <<"__HERE__";
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+    my $buff = $doctype . <<"__HERE__";
 <html lang="ja">
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
@@ -486,8 +485,7 @@ sub get_date_string {
 
 sub reply_form {
     my $q = $_[0];
-    my $buff = <<"__HERE__";
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+    my $buff = $doctype . <<"__HERE__";
 <html lang="ja">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">

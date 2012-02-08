@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Wed Feb  8 05:12:48 2012.
+#    Date: Wed Feb  8 08:29:52 2012.
 #
 # ----
 
@@ -10,6 +10,9 @@
 # @@ 要修正の箇所多数有り
 #
 package KPR;
+use strict;
+use warings;
+
 use _CGI;
 
 

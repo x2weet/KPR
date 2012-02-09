@@ -5,7 +5,7 @@
   <meta name="description" content="">
   <meta name="keyword" content="">
   <link rel="stylesheet" href="../toc.html" type="text/css">
-  <title>ディレクトリ削除用フォーム</title>
+  <title>ディレクトリ削除確認フォーム</title>
 </head>
 <body>
 
@@ -21,15 +21,15 @@
 </ul>
 </form>
 
-<h1>ディレクトリ削除用フォーム</h1>
+<h1>ディレクトリ削除確認フォーム</h1>
 
-<form action="kpr.cgi?r=dir-delete-confirm" method="POST">
+<form action="kpr.cgi?r=doc-delete" method="POST">
 <dl>
   <dt>削除するディレクトリ</dt>
-  <dd><input type="text" value="" name="PATH" id="PATH"></dd>
+  <dd>$PATH</dd>
 </dl>
 <ul class="command">
-  <li><input type="submit" value="削除確認手続きへ"></li>
+  <li><input type="submit" value="削除"></li>
 </ul>
 </form>
 

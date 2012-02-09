@@ -5,7 +5,7 @@
   <meta name="description" content="">
   <meta name="keyword" content="">
   <link rel="stylesheet" href="../toc.html" type="text/css">
-  <title>新規ディレクトリ作成用フォーム</title>
+  <title>ディレクトリ更新内容入力フォーム</title>
 </head>
 <body>
 
@@ -21,14 +21,10 @@
 </ul>
 </form>
 
-<h1>新規ディレクトリ作成用フォーム</h1>
+<h1>ディレクトリ更新内容入力フォーム</h1>
 
-<form action="kpr.cgi?r=dir-confirm" method="POST">
+<form action="kpr.cgi?r=dir-update-confirm" method="POST">
 <dl>
-  <dt><label for="PATH">作成する位置</label></dt>
-  <dd><input type="text" value="" name="PATH" id="PATH"></dd>
-  <dt><label for="ID">ディレクトリID</label></dt>
-  <dd><input type="text" value="" name="ID" id="ID"></dd>
   <dt><label for="TITLE">タイトル</label></dt>
   <dd><input type="text" value="" name="TITLE" id="TITLE"></dd>
   <dt><label for="DESC">概要文</label></dt>
@@ -36,6 +32,12 @@
 </dl>
 <ul>
   <li><input type="submit" value="内容確認へ進む"></li>
+</ul>
+</form>
+
+<form action="kpr.cgi?r=dir-update-form1" method="POST">
+<ul>
+  <li><input type="submit" value="更新ディレクトリ指定フォームへ戻る"></li>
 </ul>
 </form>
 

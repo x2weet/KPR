@@ -2,16 +2,27 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Wed Feb  8 08:29:52 2012.
+#    Date: Fri Feb 10 19:03:03 2012.
 #
 # ----
 
 #
-# @@ Í×½¤Àµ¤Î²Õ½êÂ¿¿ôÍ­¤ê
+# @@ è¦ä¿®æ­£ã®ç®‡æ‰€å¤šæ•°æœ‰ã‚Š
 #
 package KPR;
 use strict;
-use warings;
+use warnings;
+
+use vars qw(
+$dir_string
+$file_identifier
+$description
+$stylesheet_string
+
+);
+
+
+use utf8;
 
 use _CGI;
 
@@ -21,7 +32,7 @@ my $CR = "\x0D";
 my $LF = "\x0A";
 my $CRLF = $CR.$LF;
 my $q = new CGI;
-my $site_title = 'çõ¤Î°éÀ®';
+my $site_title = 'è‹ºã®è‚²æˆ';
 my $doctype = q(<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">);
 
 my $Header = $doctype . <<'__HERE__';
@@ -30,7 +41,7 @@ my $Header = $doctype . <<'__HERE__';
   <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
   <meta name="description" lang="ja" content="">
   <link rel="stylesheet" type="text/css" href="/css/bsp.css">
-  <title>KPR ¥í¥°¥¤¥ó</title>
+  <title>KPR ãƒ­ã‚°ã‚¤ãƒ³</title>
 </head>
 <body>
 __HERE__
@@ -46,7 +57,13 @@ my $runtime = time();
 # 
 sub new {
     my $class = shift;
-    my $site_id = shift;
+    my %params = @_;
+    my $site_id = "WEBSITE1";
+
+    if (!defined $params{resource} or !$params{resource}) {
+        $params{resource} = "login-form";
+    }
+
     return 
         bless { 
             "site_id" => $site_id,
@@ -55,29 +72,26 @@ sub new {
             "site_name" => $site_title,
             "header" => $Header,
             "footer" => $Footer,
+            "resource" => $params{'resource'},
         },
             $class;
 }
+sub load {
+    my $class = shift;
+    $class->new(@_);
+}
 # ---
 
-
-sub cgiq {
-    return $_[0]->{q};
-}
-sub add_buffer {
-    my ($self, $contents) = @_;
-    push @{$self->{buffer}}, $contents;
-}
-sub buffer {
-    return join "", @{$_[0]->{buffer}};
-}
-sub clear_buffer {
-    my $self = shift;
-    $self->{buffer} = [];
-}
 sub run {
     my $self = shift;
-    my $prevsect = $self->cgiq->param("SECTIONNAME");
+    my %params = @_;
+    
+    if ($self->{resource} eq "login-form") {
+        $self->login_form;
+    }
+
+=comment
+
     if ($prevsect eq "00login") {
         $self->show_create_object_type_routine;
     } elsif ($prevsect eq "00type") {
@@ -94,21 +108,53 @@ sub run {
     } else {
         $self->show_login_form_routine;
     }
+
+=cut
+
     print $self->buffer;
     return;
+}
+
+sub login_form {
+    my $self = shift;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/plain; charset=UTF-8", $CRLF,
+            $CRLF;
+    print "hello KPR system.\n";
+}
+
+sub cgiq {
+    return $_[0]->{q};
+}
+sub add_buffer {
+    my ($self, $contents) = @_;
+    push @{$self->{buffer}}, $contents;
+}
+sub buffer {
+    return join "", @{$_[0]->{buffer}};
+}
+
+1;
+
+__END__
+
+sub clear_buffer {
+    my $self = shift;
+    $self->{buffer} = [];
 }
 sub show_login_form_routine {
     my $self = shift;
     my $str = <<'__HERE__';
 <h1>KPR</h1>
 
-<h2>¥í¥°¥¤¥ó</h2>
+<h2>ãƒ­ã‚°ã‚¤ãƒ³</h2>
 <form action="index.cgi" method="POST">
 <dl>
-	<dt>¥Ñ¥¹¥ï¡¼¥É</dt>
+	<dt>ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰</dt>
 	<dd><input type="password" name="X"></dd>
 	<dd><input type="hidden" name="SECTIONNAME" value="00login">
-	<input type="submit" value="¥í¥°¥¤¥ó"></dd>
+	<input type="submit" value="ãƒ­ã‚°ã‚¤ãƒ³"></dd>
 </dl>
 </form>
 __HERE__
@@ -124,17 +170,17 @@ sub show_create_object_type_routine {
 
 <form action="index.cgi" method="POST">
 <ul><li><input type="hidden" name="KILLSESSION" value="ON">
-<input type="submit" value="¥í¥°¥¢¥¦¥È"></li></ul>
+<input type="submit" value="ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ"></li></ul>
 </form>
 
-<h2>ºîÀ®¥ª¥Ö¥¸¥§¥¯¥ÈÁªÂò</h2>
+<h2>ä½œæˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆé¸æŠ</h2>
 <form action="index.cgi" method="POST">
 <dl>
-	<dt>ºîÀ®¥ª¥Ö¥¸¥§¥¯¥È</dt>
-	<dd><label><input type="radio" name="OBJTYPE" value="00page" checked>¥Ú¡¼¥¸</label></dd>
-	<dd><label><input type="radio" name="OBJTYPE" value="00dir">¥Ç¥£¥ì¥¯¥È¥ê</label></dd>
+	<dt>ä½œæˆã‚ªãƒ–ã‚¸ã‚§ã‚¯ãƒˆ</dt>
+	<dd><label><input type="radio" name="OBJTYPE" value="00page" checked>ãƒšãƒ¼ã‚¸</label></dd>
+	<dd><label><input type="radio" name="OBJTYPE" value="00dir">ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª</label></dd>
 	<dd><input type="hidden" name="SECTIONNAME" value="00type">
-	<input type="submit" value="¾ÜºÙÆşÎÏ²èÌÌ¤Ø"></dd>
+	<input type="submit" value="è©³ç´°å…¥åŠ›ç”»é¢ã¸"></dd>
 </dl>
 </form>
 __HERE__
@@ -149,26 +195,26 @@ sub show_page_form_routine {
 
 <form action="index.cgi" method="POST">
 <ul><li><input type="hidden" name="KILLSESSION" value="ON">
-<input type="submit" value="¥í¥°¥¢¥¦¥È"></li></ul>
+<input type="submit" value="ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ"></li></ul>
 </form>
 
-<h2>¥Ú¡¼¥¸ºîÀ®</h2>
+<h2>ãƒšãƒ¼ã‚¸ä½œæˆ</h2>
 <form action="index.cgi" method="POST">
 <dl>
-	<dt>ºîÀ®Àè</dt>
+	<dt>ä½œæˆå…ˆ</dt>
 	<dd><input type="text" name="P" value="" size="48"></dd>
-	<dt>¥Ú¡¼¥¸ID</dt>
+	<dt>ãƒšãƒ¼ã‚¸ID</dt>
 	<dd><input type="text" name="I" value="" size="48">.html</dd>
-	<dt>¥Ú¡¼¥¸¥¿¥¤¥È¥ë</dt>
-	<dd><input type="text" name="S" value="ÌµÂê¥É¥­¥å¥á¥ó¥È" size="48"></dd>
-	<dt>ÆâÍÆ¤ÎÍ×Ìó</dt>
+	<dt>ãƒšãƒ¼ã‚¸ã‚¿ã‚¤ãƒˆãƒ«</dt>
+	<dd><input type="text" name="S" value="ç„¡é¡Œãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ" size="48"></dd>
+	<dt>å†…å®¹ã®è¦ç´„</dt>
 	<dd><input type="text" name="D" value="" size="48"></dd>
-	<dt>ËÜÊ¸</dt>
-	<dd><label><input type="radio" name="C" value="ul" checked>ul¤È¤·¤Æ¥Ş¡¼¥¯ÉÕ¤±</label></dd>
-	<dd><label><input type="radio" name="C" value="normal">ÃÏ¤ÎSGML</label></dd>
+	<dt>æœ¬æ–‡</dt>
+	<dd><label><input type="radio" name="C" value="ul" checked>ulã¨ã—ã¦ãƒãƒ¼ã‚¯ä»˜ã‘</label></dd>
+	<dd><label><input type="radio" name="C" value="normal">åœ°ã®SGML</label></dd>
 	<dd><textarea rows="16" cols="48" name="B"></textarea></dd>
 	<dd><input type="hidden" name="SECTIONNAME" value="00page">
-	<input type="submit" value="ºîÀ®"></dd>
+	<input type="submit" value="ä½œæˆ"></dd>
 </dl>
 </form>
 __HERE__
@@ -183,22 +229,22 @@ sub show_directory_form_routine {
 
 <form action="index.cgi" method="POST">
 <ul><li><input type="hidden" name="KILLSESSION" value="ON">
-<input type="submit" value="¥í¥°¥¢¥¦¥È"></li></ul>
+<input type="submit" value="ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ"></li></ul>
 </form>
 
-<h2>¥Ç¥£¥ì¥¯¥È¥êºîÀ®</h2>
+<h2>ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ</h2>
 <form action="index.cgi" method="POST">
 <dl>
-	<dt>ºîÀ®Àè</dt>
+	<dt>ä½œæˆå…ˆ</dt>
 	<dd><input type="text" name="P" value="" size="48"></dd>
-	<dt>¥Ç¥£¥ì¥¯¥È¥êID</dt>
+	<dt>ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªID</dt>
 	<dd><input type="text" name="I" value="" size="48">.html</dd>
-	<dt>¥Ç¥£¥ì¥¯¥È¥êÌ¾</dt>
-	<dd><input type="text" name="S" value="¿·µ¬¥Ç¥£¥ì¥¯¥È¥ê" size="48"></dd>
-	<dt>ÆâÍÆ¤ÎÍ×Ìó</dt>
+	<dt>ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªå</dt>
+	<dd><input type="text" name="S" value="æ–°è¦ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª" size="48"></dd>
+	<dt>å†…å®¹ã®è¦ç´„</dt>
 	<dd><input type="text" name="D" value="" size="48"></dd>
 	<dd><input type="hidden" name="SECTIONNAME" value="00page">
-	<input type="submit" value="ºîÀ®"></dd>
+	<input type="submit" value="ä½œæˆ"></dd>
 </dl>
 </form>
 __HERE__
@@ -221,18 +267,18 @@ sub show_accept_msg_routine {
 
 <form action="index.cgi" method="POST">
 <ul><li><input type="hidden" name="KILLSESSION" value="ON">
-<input type="submit" value="¥í¥°¥¢¥¦¥È"></li></ul>
+<input type="submit" value="ãƒ­ã‚°ã‚¢ã‚¦ãƒˆ"></li></ul>
 </form>
 
-<h2>ºîÀ®À®¸ù</h2>
-<ul><li>ºîÀ®ºî¶È¤ÏÀµ¾ï¤Ë½ªÎ»¤·¤Ş¤·¤¿¡£</li></ul>
+<h2>ä½œæˆæˆåŠŸ</h2>
+<ul><li>ä½œæˆä½œæ¥­ã¯æ­£å¸¸ã«çµ‚äº†ã—ã¾ã—ãŸã€‚</li></ul>
 __HERE__
     
     $self->output_buffer($str);
 }
 
 
-# HTMLÊ¸½ñ¤ÎÀ¸À®
+# HTMLæ–‡æ›¸ã®ç”Ÿæˆ
 sub create_file {
     my $self = shift;
     my $fileid = shift;
@@ -273,7 +319,7 @@ $navi_str
 <h1>$title</h1>
 
 <dl class="status">
-  <dt>ºÇ½ª¹¹¿·</dt> 
+  <dt>æœ€çµ‚æ›´æ–°</dt> 
   <dd>$date_str</dd>
 </dl>
 
@@ -297,7 +343,7 @@ __HERE__
     return;
 }
 
-# ¥Ç¥£¥ì¥¯¥È¥ê¤ÎÀ¸À®
+# ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ç”Ÿæˆ
 sub create_dir {
     my $self = shift;
     my $site_id = $self->{site_id};
@@ -316,7 +362,7 @@ sub create_dir {
 
 
 #
-# ¥¤¥ó¥Ç¥¯¥¹Ê¸½ñ¤ÎÀ¸À®
+# ã‚¤ãƒ³ãƒ‡ã‚¯ã‚¹æ–‡æ›¸ã®ç”Ÿæˆ
 #
 sub create_toc {
     my $self = shift;
@@ -357,7 +403,7 @@ sub create_toc {
         next if $dir_item eq ".html" || $dir_item eq "index.html" || $dir_item eq "." || $dir_item eq "..";
         my($ttl, $dsc);
 		
-        if (-d $dir_item) { # win98se¤Ë¤Æ¥Ç¥£¥ì¥¯¥È¥êÈ½Äê¤Ç¤­¤º(¾ï¤Ëµ¶)
+        if (-d $dir_item) { # win98seã«ã¦ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªåˆ¤å®šã§ããš(å¸¸ã«å½)
             ($ttl, $dsc) = get_title("$dummy/$dir_item/index.html");
             $toc .= qq@<dt><a href="$dir_item/">$ttl</a></dt>\n@;
             $dsc and $toc .= "<dd>$dsc</dd>\n";
@@ -372,8 +418,8 @@ sub create_toc {
             $dsc and $toc .= "<dd>$dsc</dd>\n";
         }
     } 
-    $toc and $toc = <<__HERE__; # ¡Öº÷°ú¡×¡ÖÆâÍÆ¡×¡Ö¥¤¥ó¥Ç¥¯¥¹¡×¡Ö¥³¥ó¥Æ¥ó¥Ä¡×
-<h2>ÌÜ¼¡</h2>
+    $toc and $toc = <<__HERE__; # ã€Œç´¢å¼•ã€ã€Œå†…å®¹ã€ã€Œã‚¤ãƒ³ãƒ‡ã‚¯ã‚¹ã€ã€Œã‚³ãƒ³ãƒ†ãƒ³ãƒ„ã€
+<h2>ç›®æ¬¡</h2>
 
 <dl>
 $toc
@@ -417,7 +463,7 @@ __HERE__
 
 
 #
-# ¥Ê¥ô¥£¥²¡¼¥·¥ç¥óÀ¸À®
+# ãƒŠãƒ´ã‚£ã‚²ãƒ¼ã‚·ãƒ§ãƒ³ç”Ÿæˆ
 #
 sub get_navi_string {
     my $self = shift;
@@ -427,7 +473,7 @@ sub get_navi_string {
     my $dummy = $site_id."/".$path;
 	
     if ($path ne "index.html") {
-        if ($dummy !~ /index\.html$/) { # ¥Õ¥¡¥¤¥ë
+        if ($dummy !~ /index\.html$/) { # ãƒ•ã‚¡ã‚¤ãƒ«
             $dummy =~ s/^(.+)\/.*/$1\/index\.html/ or die($!);
             if ($1 eq $site_id) {
                 return '<ul class="navi"><li><a href="./">'.$site_title.'</a></li></ul>';
@@ -436,7 +482,7 @@ sub get_navi_string {
                 push @items, '<li><a href="./">'.$title.'</a></li>';
             }
         }
-        $dummy =~ s/^(.+)\/.*$/$1/ or die(); # "index.html"ºï½ü
+        $dummy =~ s/^(.+)\/.*$/$1/ or die(); # "index.html"å‰Šé™¤
 		
         my $c = 0;
         while ($dummy =~ s/^(.+)\/.*$/$1/) {
@@ -478,12 +524,12 @@ sub set_date_string {
     my $source = $_[0] ? $_[0] : $runtime;
     my @elements = localtime($source);
 	
-    $date_string = sprintf("%dÇ¯%d·î%dÆü", $elements[5] + 1970, $elements[4] + 1, $elements[3]);
+    $date_string = sprintf("%då¹´%dæœˆ%dæ—¥", $elements[5] + 1970, $elements[4] + 1, $elements[3]);
 }
 sub get_date_string {
     my $source = $_[0];
     my @elements = localtime($source);
-    return sprintf("%dÇ¯%d·î%dÆü", $elements[5] + 1970, $elements[4] + 1, $elements[3]);
+    return sprintf("%då¹´%dæœˆ%dæ—¥", $elements[5] + 1970, $elements[4] + 1, $elements[3]);
 }
 
 sub reply_form {
@@ -494,53 +540,53 @@ sub reply_form {
 <meta http-equiv="Content-Type" content="text/html; charset=Shift_JIS">
 <meta name="description" lang="ja" content="">
 <link rel="stylesheet" type="text/css" href="/css/bsp.css">
-<title>KPR¥Õ¥©¡¼¥à</title>
+<title>KPRãƒ•ã‚©ãƒ¼ãƒ </title>
 </head>
 <body>
 
-<h1>KPR¥Õ¥©¡¼¥à</h1>
+<h1>KPRãƒ•ã‚©ãƒ¼ãƒ </h1>
 
 <ul>
-<li><a href="http://HowToFill.html">ºîÀ®¥Õ¥©¡¼¥àµ­ÆşÊıË¡</a></li>
+<li><a href="http://HowToFill.html">ä½œæˆãƒ•ã‚©ãƒ¼ãƒ è¨˜å…¥æ–¹æ³•</a></li>
 </ul>
 
-<h2>·êËä¤á</h2>
+<h2>ç©´åŸ‹ã‚</h2>
 <form action="kpr.cgi" method="POST">
 <fieldset>
-	<legend><label><input type="radio" name="T" value="d" checked>Ê¸½ñ¤ÎºîÀ®</label></legend>
+	<legend><label><input type="radio" name="T" value="d" checked>æ–‡æ›¸ã®ä½œæˆ</label></legend>
 	<dl>
-	<dt>ºîÀ®Àè</dt>
+	<dt>ä½œæˆå…ˆ</dt>
 	<dd><input type="text" name="P" value="" size="48"></dd>
-	<dt>Ê¸½ñID</dt>
+	<dt>æ–‡æ›¸ID</dt>
 	<dd><input type="text" name="I" value="" size="48">.html</dd>
-	<dt>Ê¸½ñ¥¿¥¤¥È¥ë</dt>
-	<dd><input type="text" name="S" value="ÌµÂê¥É¥­¥å¥á¥ó¥È" size="48"></dd>
-	<dt>ÆâÍÆ¤ÎÍ×Ìó</dt>
+	<dt>æ–‡æ›¸ã‚¿ã‚¤ãƒˆãƒ«</dt>
+	<dd><input type="text" name="S" value="ç„¡é¡Œãƒ‰ã‚­ãƒ¥ãƒ¡ãƒ³ãƒˆ" size="48"></dd>
+	<dt>å†…å®¹ã®è¦ç´„</dt>
 	<dd><input type="text" name="D" value="" size="48"></dd>
-	<dt>ËÜÊ¸</dt>
-	<dd><label><input type="radio" name="C" value="ul" checked>ul¤È¤·¤Æ¥Ş¡¼¥¯ÉÕ¤±</label></dd>
-	<dd><label><input type="radio" name="C" value="normal">ÃÏ¤ÎSGML</label></dd>
+	<dt>æœ¬æ–‡</dt>
+	<dd><label><input type="radio" name="C" value="ul" checked>ulã¨ã—ã¦ãƒãƒ¼ã‚¯ä»˜ã‘</label></dd>
+	<dd><label><input type="radio" name="C" value="normal">åœ°ã®SGML</label></dd>
 	<dd><textarea rows="16" cols="48" name="B"></textarea></dd>
 </dl>
 </fieldset>
 
 <fieldset>
-	<legend><label><input type="radio" name="T" value="f">¥Ç¥£¥ì¥¯¥È¥ê¤ÎºîÀ®</label></legend>
+	<legend><label><input type="radio" name="T" value="f">ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ä½œæˆ</label></legend>
 <dl>
-	<dt>ºîÀ®Àè</dt>
+	<dt>ä½œæˆå…ˆ</dt>
 	<dd><input type="text" name="R" value=""></dd>
-	<dt>¥Ç¥£¥ì¥¯¥È¥êID</dt>
+	<dt>ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªID</dt>
 	<dd><input type="text" name="K" value="">/</dd>
-	<dt>¥Ç¥£¥ì¥¯¥È¥ê¥¿¥¤¥È¥ë</dt>
-	<dd><input type="text" name="L" value="¿·µ¬¥Ç¥£¥ì¥¯¥È¥ê"></dd>
-	<dt>¥Ç¥£¥ì¥¯¥È¥ê¤ÎÀâÌÀÊ¸</dt>
+	<dt>ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚¿ã‚¤ãƒˆãƒ«</dt>
+	<dd><input type="text" name="L" value="æ–°è¦ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª"></dd>
+	<dt>ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®èª¬æ˜æ–‡</dt>
 	<dd><input type="text" name="N" value=""></dd>
 </dl>
 </fieldset>
 
 <dl>
-	<dt>¥Ñ¥¹¥ï¡¼¥É</dt><dd><input type="password" name="X"></dd>
-	<dt>¥³¥Ş¥ó¥É¤ÎÁ÷¿®</dt><dd><input type="submit" value="ºîÀ®(Á÷¿®)"></dd>
+	<dt>ãƒ‘ã‚¹ãƒ¯ãƒ¼ãƒ‰</dt><dd><input type="password" name="X"></dd>
+	<dt>ã‚³ãƒãƒ³ãƒ‰ã®é€ä¿¡</dt><dd><input type="submit" value="ä½œæˆ(é€ä¿¡)"></dd>
 </dl>
 
 </form>
@@ -593,7 +639,7 @@ my (
 sub set_user_params {
     my $self = $_[0];
   
-    # ¥¢¥¯¥»¥µ¤ÎÄêµÁ¤ò¾Ê¤¤¤Æ¤¤¤ë¤Î¤ÇÄ¾ÀÜÂåÆş¡Ê¤è¤í¤·¤¯¤Ê¤¤...¡Ë
+    # ã‚¢ã‚¯ã‚»ã‚µã®å®šç¾©ã‚’çœã„ã¦ã„ã‚‹ã®ã§ç›´æ¥ä»£å…¥ï¼ˆã‚ˆã‚ã—ããªã„...ï¼‰
     #
     $self->{'dir_string'} = $self->cgiq->param("P");
     $self->{'dir_string'} and $self->{'dir_string'} .= "/"; #
@@ -629,16 +675,16 @@ sub set_user_params {
 
 
 # --------------------------------------------
-# ¥Õ¥¡¥¤¥ë/¥Ç¥£¥ì¥¯¥È¥êºîÀ®ºî¶È´°Î»¸å¤Î
-# HTTP¥ì¥¹¥İ¥ó¥¹ÆâÍÆ¤Ë¤Ä¤¤¤Æ
+# ãƒ•ã‚¡ã‚¤ãƒ«/ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆä½œæ¥­å®Œäº†å¾Œã®
+# HTTPãƒ¬ã‚¹ãƒãƒ³ã‚¹å†…å®¹ã«ã¤ã„ã¦
 #
-# ¤³¤Î¥¹¥¯¥ê¥×¥È¤ÎCGI¤È¤Ê¤ë¥ê¥½¡¼¥¹¤ËÂĞ¤¹¤ë
-# GET¤Ë¤Ä¤¤¤Æ¤ÏÁ´¤ÆÆ±°ì¤Î¥µ¥ó¥×¥ë¥Õ¥©¡¼¥à¤òÊÖ¤¹¡£
+# ã“ã®ã‚¹ã‚¯ãƒªãƒ—ãƒˆã®CGIã¨ãªã‚‹ãƒªã‚½ãƒ¼ã‚¹ã«å¯¾ã™ã‚‹
+# GETã«ã¤ã„ã¦ã¯å…¨ã¦åŒä¸€ã®ã‚µãƒ³ãƒ—ãƒ«ãƒ•ã‚©ãƒ¼ãƒ ã‚’è¿”ã™ã€‚
 #
-# POST¤ò¼õ¤±¤Æ¡¢ÆâÉôÅª¤Ë¹ÔÆ°¤·¡¢¤½¤Î·ë²Ì¤¬Àµ¾ï¤ÈÈ½ÃÇ¤µ¤ì¤¿¾ì¹ç
-# HTTP¥á¥Ã¥»¡¼¥¸¥Ü¥Ç¥£¤ò´Ş¤Ş¤Ê¤¤¥³¡¼¥É200¤Î¥ì¥¹¥İ¥ó¥¹¤òÊÖ¤¹¡£# ¢«!
-# ¤½¤ÎÂ¾¡¢POST¥á¥½¥Ã¥É¤ò¼õ¤±¤¿¾ì¹ç¤Î¥ì¥¹¥İ¥ó¥¹¤Ï
-# Îã³°Ìµ¤¯HTTP¥á¥Ã¥»¡¼¥¸¥Ü¥Ç¥£¤ò´Ş¤Ş¤Ê¤¤¤â¤Î¤È¤¹¤ë¡£
+# POSTã‚’å—ã‘ã¦ã€å†…éƒ¨çš„ã«è¡Œå‹•ã—ã€ãã®çµæœãŒæ­£å¸¸ã¨åˆ¤æ–­ã•ã‚ŒãŸå ´åˆ
+# HTTPãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒ‡ã‚£ã‚’å«ã¾ãªã„ã‚³ãƒ¼ãƒ‰200ã®ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã‚’è¿”ã™ã€‚# â†!
+# ãã®ä»–ã€POSTãƒ¡ã‚½ãƒƒãƒ‰ã‚’å—ã‘ãŸå ´åˆã®ãƒ¬ã‚¹ãƒãƒ³ã‚¹ã¯
+# ä¾‹å¤–ç„¡ãHTTPãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ãƒœãƒ‡ã‚£ã‚’å«ã¾ãªã„ã‚‚ã®ã¨ã™ã‚‹ã€‚
 
 =comment
 
@@ -667,7 +713,7 @@ __END__
 
 &lt;hr&gt;
 
-&lt;h2&gt;Äó¶¡&lt;/h2&gt;
+&lt;h2&gt;æä¾›&lt;/h2&gt;
 &lt;address&gt;&lt;/address&gt;-->
 
 

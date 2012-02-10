@@ -1,3 +1,4 @@
+# -*- Mode: Perl -*-
 use strict;
 use warnings;
 
@@ -24,3 +25,5 @@ __HERE__
 #
 # END of the configure section
 # 
+
+1;

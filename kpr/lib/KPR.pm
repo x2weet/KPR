@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Sat Feb 11 17:01:03 2012.
+#    Date: Sat Feb 11 18:07:07 2012.
 #
 # ----
 
@@ -103,6 +103,15 @@ sub run {
     elsif ($self->{resource} eq "doc-update-form") {
         $self->doc_update_form;
     }
+    elsif ($self->{resource} eq "dir-create-form") {
+        $self->dir_create_form;
+    }
+    elsif ($self->{resource} eq "dir-delete-form") {
+        $self->dir_delete_form;
+    }
+    elsif ($self->{resource} eq "dir-update-form") {
+        $self->dir_update_form;
+    }
 
     print $self->buffer;
     return;
@@ -183,6 +192,58 @@ sub doc_update_form {
             $CRLF;
     print @lines;
 }
+
+
+sub dir_create_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/dir-create-form.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
+}
+
+sub dir_delete_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/dir-delete-form.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
+}
+
+sub dir_update_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/dir-update-form.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
+}
+
+# doc/dir section end
+
+
+
+
 
 sub cgiq {
     return $_[0]->{q};

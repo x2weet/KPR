@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Sat Feb 11 18:07:07 2012.
+#    Date: Sat Feb 11 18:29:49 2012.
 #
 # ----
 
@@ -32,26 +32,6 @@ use _CGI;
 my $CR = "\x0D";
 my $LF = "\x0A";
 my $CRLF = $CR.$LF;
-my $q = new CGI;
-my $site_title = '苺の育成';
-my $doctype = q(<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">);
-
-my $Header = $doctype . <<'__HERE__';
-<html lang="ja">
-<head>
-  <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
-  <meta name="description" lang="ja" content="">
-  <link rel="stylesheet" type="text/css" href="/css/bsp.css">
-  <title>KPR ログイン</title>
-</head>
-<body>
-__HERE__
-
-#
-my $Footer = <<'__HERE__';
-</body>
-</html>
-__HERE__
 
 my $runtime = time();
 
@@ -68,11 +48,8 @@ sub new {
     return 
         bless { 
             "site_id" => $site_id,
-            "q" => $q,
+#            "q" => $q,
             "buffer" => [],
-            "site_name" => $site_title,
-            "header" => $Header,
-            "footer" => $Footer,
             "resource" => $params{'resource'},
         },
             $class;
@@ -81,7 +58,7 @@ sub load {
     my $class = shift;
     $class->new(@_);
 }
-# ---
+
 
 sub run {
     my $self = shift;
@@ -126,7 +103,6 @@ sub login_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -142,7 +118,6 @@ sub menu_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -157,7 +132,6 @@ sub doc_create_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -172,7 +146,6 @@ sub doc_delete_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -187,7 +160,6 @@ sub doc_update_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -203,7 +175,6 @@ sub dir_create_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -218,7 +189,6 @@ sub dir_delete_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -233,7 +203,6 @@ sub dir_update_form {
     my @lines = <$fh> or die $!;
     close $fh;
     print
-        "HTTP/1.1 200 OK", $CRLF,
         "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
     print @lines;
@@ -243,6 +212,37 @@ sub dir_update_form {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+my $q = new CGI;
+my $site_title = '苺の育成';
+my $doctype = q(<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">);
+
+my $Header = $doctype . <<'__HERE__';
+<html lang="ja">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=EUC-JP">
+  <meta name="description" lang="ja" content="">
+  <link rel="stylesheet" type="text/css" href="/css/bsp.css">
+  <title>KPR ログイン</title>
+</head>
+<body>
+__HERE__
+
+#
+my $Footer = <<'__HERE__';
+</body>
+</html>
+__HERE__
 
 
 sub cgiq {

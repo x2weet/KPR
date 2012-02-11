@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Sat Feb 11 15:14:21 2012.
+#    Date: Sat Feb 11 17:01:03 2012.
 #
 # ----
 
@@ -87,33 +87,22 @@ sub run {
     my $self = shift;
     my %params = @_;
     
+    # Switch section
     if ($self->{resource} eq "login-form") {
         $self->login_form;
     }
     elsif ($self->{resource} eq "menu-form") {
         $self->menu_form;
     }
-
-=comment
-
-    if ($prevsect eq "00login") {
-        $self->show_create_object_type_routine;
-    } elsif ($prevsect eq "00type") {
-        my $objtype = $self->cgiq->param("OBJTYPE");
-        if ($objtype eq "00page") {
-            $self->show_page_form_routine;
-        } elsif ($objtype eq "00dir") {
-            $self->show_directory_form_routine;
-        }
-    } elsif ($prevsect eq "00page") {
-        $self->show_accept_msg_routine;
-    } elsif ($prevsect eq "00dir") {
-        $self->show_accept_msg_routine;
-    } else {
-        $self->show_login_form_routine;
+    elsif ($self->{resource} eq "doc-create-form") {
+        $self->doc_create_form;
     }
-
-=cut
+    elsif ($self->{resource} eq "doc-delete-form") {
+        $self->doc_delete_form;
+    }
+    elsif ($self->{resource} eq "doc-update-form") {
+        $self->doc_update_form;
+    }
 
     print $self->buffer;
     return;
@@ -150,6 +139,51 @@ sub menu_form {
     print @lines;
 }
 
+sub doc_create_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/doc-create-form.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
+}
+
+sub doc_delete_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/doc-delete-form.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
+}
+
+sub doc_update_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/doc-update-form.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
+}
+
 sub cgiq {
     return $_[0]->{q};
 }
@@ -164,6 +198,28 @@ sub buffer {
 1;
 
 __END__
+
+=comment
+
+    if ($prevsect eq "00login") {
+        $self->show_create_object_type_routine;
+    } elsif ($prevsect eq "00type") {
+        my $objtype = $self->cgiq->param("OBJTYPE");
+        if ($objtype eq "00page") {
+            $self->show_page_form_routine;
+        } elsif ($objtype eq "00dir") {
+            $self->show_directory_form_routine;
+        }
+    } elsif ($prevsect eq "00page") {
+        $self->show_accept_msg_routine;
+    } elsif ($prevsect eq "00dir") {
+        $self->show_accept_msg_routine;
+    } else {
+        $self->show_login_form_routine;
+    }
+
+=cut
+
 
 sub clear_buffer {
     my $self = shift;

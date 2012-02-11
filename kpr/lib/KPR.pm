@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Fri Feb 10 19:03:03 2012.
+#    Date: Sat Feb 11 15:14:21 2012.
 #
 # ----
 
@@ -24,6 +24,7 @@ $stylesheet_string
 
 use utf8;
 
+use Carp qw/carp croak/;
 use _CGI;
 
 
@@ -89,6 +90,9 @@ sub run {
     if ($self->{resource} eq "login-form") {
         $self->login_form;
     }
+    elsif ($self->{resource} eq "menu-form") {
+        $self->menu_form;
+    }
 
 =comment
 
@@ -117,11 +121,33 @@ sub run {
 
 sub login_form {
     my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/kpr-login.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
     print
         "HTTP/1.1 200 OK", $CRLF,
-        "Content-Type: text/plain; charset=UTF-8", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
             $CRLF;
-    print "hello KPR system.\n";
+    print @lines;
+    # print "hello KPR system.\n";
+}
+
+sub menu_form {
+    my $self = shift;
+    my $fh;
+
+    open $fh, '<', "skeleton/kpr-menu.html"
+        or die("$!");
+    my @lines = <$fh> or die $!;
+    close $fh;
+    print
+        "HTTP/1.1 200 OK", $CRLF,
+        "Content-Type: text/html; charset=UTF-8", $CRLF,
+            $CRLF;
+    print @lines;
 }
 
 sub cgiq {

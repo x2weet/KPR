@@ -5,9 +5,9 @@
 #  Author: Ryota Wada
 #    Date: Sat Feb 11 16:57:09 2012.
 
-BEGIN {
-    unshift @INC, './lib', './site-lib';
-}
+
+use lib qw(./lib);
+
 use strict;
 use warnings;
 

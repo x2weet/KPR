@@ -2,7 +2,7 @@
 # KPR System  -- a compact CMS --
 #
 #  Author: Ryota Wada
-#    Date: Sat Feb 11 18:29:49 2012.
+#    Date: Sat Feb 11 22:56:56 2012.
 #
 # ----
 
@@ -25,8 +25,8 @@ $stylesheet_string
 use utf8;
 
 use Carp qw/carp croak/;
-use _CGI;
-
+use CGI;
+use CGI::Session;
 
 # Global variables definition section
 my $CR = "\x0D";

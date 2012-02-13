@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Mon Feb 13 17:41:36 2012. (JST)
+#     Date: Mon Feb 13 18:06:11 2012. (JST)
 #
 package KPR;
 use strict;
@@ -13,19 +13,19 @@ sub setup {
     my $c = shift;
 
     $c->start_mode('login_form');
-    $c->run_modes([qw/
-                         login_form
-                         menu_form
-                         doc_create_form
-                         doc_delete_form
-                         doc_update_form
-                         dir_create_form
-                         dir_delete_form
-                         dir_update_form
-                     /]);
+    $c->run_modes(
+        'login_form' => \&x_form,
+        'menu_form' => \&x_form,
+        'doc_create_form', => \&x_form,
+        'doc_delete_form', => \&x_form,
+        'doc_update_form', => \&x_form,
+        'dir_create_form', => \&x_form,
+        'dir_delete_form', => \&x_form,
+        'dir_update_form', => \&x_form,
+    );
     $c->mode_param("r");
 }
-sub login_form { 
+sub x_form { 
     my $c = shift;
     my $errs = shift;
 

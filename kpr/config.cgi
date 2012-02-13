@@ -5,10 +5,8 @@ use utf8;
 
 
 #my $Password = 'password';
+my $Website_Dir = '../websites';
 my $site_id    = "SAMPLE1";
 my $Email_Add = 'master@domain';
-my $document_footer = <<'__HERE__';
-__HERE__
-
 
 1;

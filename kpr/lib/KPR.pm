@@ -2,17 +2,18 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Fri Feb 17 18:39:50 2012. (JST)
+#     Date: Sat Feb 18 00:35:13 2012. (JST)
 #
 package KPR;
 use strict;
 use warnings;
 use base 'CGI::Application';
 
+use CGI::Application::Plugin::ConfigAuto (qw/cfg/);
+
 sub setup {
     my $c = shift;
 
-    $c->start_mode('login_form');
     $c->run_modes(
         'login_form' => \&x_form,
         'menu_form' => \&x_form,
@@ -23,9 +24,19 @@ sub setup {
         'dir_delete_form', => \&x_form,
         'dir_update_form', => \&x_form,
     );
-    $c->mode_param("resource");
-    $c->start_mode( $c->param('resource') );
+    $c->mode_param('resource');
+    $c->query->param('resource', $c->param('resource') );
+
+    $c->tmpl_path($c->cfg('TemplateDirectory'));
+
+    # debug
+    # open my $fh, '>', 'test.txt' or die $!;
+    # my %d = $c->cfg;
+    # print $fh $c->tmpl_path();
+    # close $fh;
+
 }
+
 sub x_form { 
     my $self = shift;
     my $errs = shift;

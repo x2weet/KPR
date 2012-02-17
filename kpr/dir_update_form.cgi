@@ -10,8 +10,8 @@ use lib qw(./lib);
 use KPR;
 
 my $kpr = KPR->new(
-    TMPL_PATH => 'skeleton/',
     PARAMS => {
+        cfg_file => 'config.pl',
         resource => 'dir_update_form',
     },
 );

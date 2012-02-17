@@ -1,5 +1,10 @@
 #! /usr/bin/perl
-
+#
+# KPR instance file script
+#
+#   Author: Ryota Wada
+#     Date: Fri Feb 17 23:54:19 2012. (JST)
+#
 use strict;
 use warnings;
 use utf8;
@@ -28,8 +33,8 @@ use lib qw(./lib);
 use KPR;
 
 my $kpr = KPR->new(
-    TMPL_PATH => 'skeleton/',
     PARAMS => {
+        cfg_file => 'config.pl',
         resource => '__RESOURCE__',
     },
 );
@@ -37,12 +42,22 @@ my $kpr = KPR->new(
 $kpr->run;
 __HERE__
 
-while (my($key, $val) = each %resource_file_map) {
-    my $fh;
-    open $fh, '>', $val or die $!;
-    $_ = $file_templete;
-    s/__RESOURCE__/$key/g;
-    print $fh $_;
-    close $fh;
+# the main routine
+if (defined $ARGV[0] && $ARGV[0] eq "remove") {
+    foreach my $val (values %resource_file_map) {
+        unlink $val or die $!;
+    }
 }
+else {
+    while (my($key, $val) = each %resource_file_map) {
+        my $fh;
+        open $fh, '>', $val or die $!;
+        $_ = $file_templete;
+        s/__RESOURCE__/$key/g;
+        print $fh $_;
+        close $fh;
+    }
+}
+exit;
+
 # END

@@ -11,7 +11,7 @@
 
 <h1>ログイン</h1>
 
-<form action="kpr-login-form.cgi" method="POST">
+<form action="login_form.cgi" method="POST">
 <dl>
   <dt><label for="USERID">ユーザID</label></dt>
   <dd><input type="text" value="" name="USERID" id="USERID"></dd>
@@ -19,7 +19,7 @@
   <dd><input type="password" value="" name="PASSWORD" id="PASSWORD"></dd>
 </dl>
 <ul>
-  <li><input type="submit" value="ログイン"></li>
+  <li><input type="hidden" name="COMMAND" value="login"><input type="submit" value="ログイン"></li>
 </ul>
 </form>
 

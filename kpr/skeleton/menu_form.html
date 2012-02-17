@@ -9,7 +9,7 @@
 </head>
 <body>
 
-<form action="kpr-login-form.cgi" method="POST">
+<form action="login_form.cgi" method="POST">
 <ul class="path">
   <li><input type="submit" value="ログアウト"></li>
 </ul>
@@ -18,26 +18,26 @@
 
 <h1>メインメニュー</h1>
 
-<form action="kpr-menu.cgi" method="POST">
+<form action="menu_form.cgi" method="POST">
 <dl>
   <dt>コマンド</dt>
   <dd>
     <dl>
       <dt>文書関連</dt>
-      <dd><label><input type="radio" value="create" name="KPRCOMMAND">文書作成</label></dd>
-      <dd><label><input type="radio" value="update" name="KPRCOMMAND">文書編集</label></dd>
-      <dd><label><input type="radio" value="delete" name="KPRCOMMAND">文書削除</label></dd>
+      <dd><label><input type="radio" value="doc_create_form" name="KPRCOMMAND">文書作成</label></dd>
+      <dd><label><input type="radio" value="doc_update_form" name="KPRCOMMAND">文書編集</label></dd>
+      <dd><label><input type="radio" value="doc_delete_form" name="KPRCOMMAND">文書削除</label></dd>
     </dl>
     <dl>
       <dt>ディレクトリ関連</dt>
-      <dd><label><input type="radio" value="create" name="KPRCOMMAND">ディレクトリ作成</label></dd>
-      <dd><label><input type="radio" value="update" name="KPRCOMMAND">ディレクトリ編集</label></dd>
-      <dd><label><input type="radio" value="delete" name="KPRCOMMAND">ディレクトリ削除</label></dd>
+      <dd><label><input type="radio" value="dir_create_form" name="KPRCOMMAND">ディレクトリ作成</label></dd>
+      <dd><label><input type="radio" value="dir_update_form" name="KPRCOMMAND">ディレクトリ編集</label></dd>
+      <dd><label><input type="radio" value="dir_delete_form" name="KPRCOMMAND">ディレクトリ削除</label></dd>
     </dl>
   </dd>
 </dl>
 <ul>
-  <li><input type="submit" value="コマンド詳細へ"></li>
+  <li><input type="hidden" name="MODE" value="command"><input type="submit" value="コマンド詳細へ"></li>
 </ul>
 </form>
 

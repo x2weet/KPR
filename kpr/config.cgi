@@ -5,8 +5,8 @@ use utf8;
 
 
 #my $Password = 'password';
-my $Website_Dir = '../websites';
-my $site_id    = "SAMPLE1";
-my $Email_Add = 'master@domain';
+our $Website_Dir = '../websites';
+our $Site_ID     = "SAMPLE1";
+our $Email_Add   = 'webmaster@example.com';
 
 1;

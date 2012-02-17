@@ -9,13 +9,13 @@
 </head>
 <body>
 
-<form action="kpr-login-form.cgi" method="POST">
+<form action="kpr.cgi?r=login_form" method="POST">
 <ul class="path">
   <li><input type="submit" value="ログアウト"></li>
 </ul>
 </form>
 
-<form action="kpr-menu-form.cgi" method="POST">
+<form action="kpr.cgi?r=menu_form" method="POST">
 <ul class="path">
   <li><input type="submit" value="メインメニュー"></li>
 </ul>
@@ -23,7 +23,7 @@
 
 <h1>新規文書作成用フォーム</h1>
 
-<form action="doc-create-form.cgi" method="POST">
+<form action="kpr.cgi?r=doc_create_form" method="POST">
 <dl>
   <dt><label for="PATH">作成する位置</label></dt>
   <dd><input type="text" value="" name="PATH" id="PATH"></dd>
@@ -37,7 +37,7 @@
   <dd><textarea rows="16" cols="64" name="BODY" id="BODY"></textarea></dd>
 </dl>
 <ul>
-  <li><input type="submit" value="内容確認へ進む"></li>
+  <li><input type="hidden" name="INPUTTED" value="inputted"><input type="submit" value="内容確認へ進む"></li>
 </ul>
 </form>
 

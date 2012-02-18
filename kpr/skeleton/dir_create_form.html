@@ -9,13 +9,13 @@
 </head>
 <body>
 
-<form action="kpr-login-form.cgi" method="POST">
+<form action="login_form.cgi" method="POST">
 <ul class="path">
   <li><input type="submit" value="ログアウト"></li>
 </ul>
 </form>
 
-<form action="kpr-menu-form.cgi" method="POST">
+<form action="menu_form.cgi" method="POST">
 <ul class="path">
   <li><input type="submit" value="メインメニュー"></li>
 </ul>
@@ -23,7 +23,7 @@
 
 <h1>新規ディレクトリ作成用フォーム</h1>
 
-<form action="kpr.cgi?r=dir-confirm" method="POST">
+<form action="dir_create_form.cgi" method="POST">
 <dl>
   <dt><label for="PATH">作成する位置</label></dt>
   <dd><input type="text" value="" name="PATH" id="PATH"></dd>
@@ -35,7 +35,7 @@
   <dd><input type="text" value="" name="DESC" id="DESC"></dd>
 </dl>
 <ul>
-  <li><input type="submit" value="内容確認へ進む"></li>
+  <li><input type="hidden" name="MODE" value="command"><input type="submit" value="内容確認へ進む"></li>
 </ul>
 </form>
 

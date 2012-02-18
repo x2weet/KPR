@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Sat Feb 18 03:42:23 2012. (JST)
+#     Date: Sat Feb 18 20:17:19 2012. (JST)
 #
 package KPR;
 use strict;
@@ -32,7 +32,7 @@ sub setup {
         'doc_create_form' => \&kpr_doc_create,
         'doc_delete_form' => \&x_form,
         'doc_update_form' => \&x_form,
-        'dir_create_form' => \&x_form,
+        'dir_create_form' => \&kpr_dir_create,
         'dir_delete_form' => \&x_form,
         'dir_update_form' => \&x_form,
     );
@@ -105,8 +105,10 @@ sub kpr_doc_create {
     my $q = $self->query;
 
     if ($q->param('MODE') eq "command") {
-        my $file_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID') . $q->param('ID') . '.html';
+        my $file_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID').'/'. $q->param('ID') . '.html';
 
+        my $desc = $q->param('DESC');
+        my $title = $q->param('TITLE');
         my $fh;
         open $fh, '>', $file_path 
             or die $!;
@@ -115,14 +117,14 @@ sub kpr_doc_create {
 <html lang="ja">
 <head>
   <meta name="author" content="">
-  <meta name="description" content="$q->param('DESC')">
+  <meta name="description" content="$desc">
   <meta name="keyword" content="">
   <link rel="stylesheet" href="" type="text/css">
-  <title>$q->param('TITLE')</title>
+  <title>$title</title>
 </head>
 <body>
 
-<h1>$q->param('TITLE')</h1>
+<h1>$title</h1>
 
 __HERE__
         print $fh $q->param('BODY');
@@ -130,6 +132,28 @@ __HERE__
 </body>
 </html>
 __HERE__
+        $self->redirect('menu_form.cgi');
+    }
+    elsif ($q->param('MODE') eq "confirm") {
+        # confirm routine
+    }
+    else { # default
+        my $t = $self->load_tmpl;
+        $t->param($errs) if $errs;
+        return $t->output;
+    }
+}
+sub kpr_dir_create {
+    my $self = shift;
+    my $errs = shift;
+
+    my $q = $self->query;
+
+    if ($q->param('MODE') eq "command") {
+        my $dir_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID').'/'. $q->param('ID');
+        
+        mkdir $dir_path
+            or die $!;
         $self->redirect('menu_form.cgi');
     }
     elsif ($q->param('MODE') eq "confirm") {

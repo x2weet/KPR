@@ -11,5 +11,6 @@ SiteKeywords=苺, 園芸, 家庭菜園
 WebsiteDirectory=../websites/
 TemplateDirectory=skeleton/
 
+Author=Ryota Wada
 
 # END

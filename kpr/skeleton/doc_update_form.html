@@ -5,7 +5,7 @@
   <meta name="description" content="">
   <meta name="keyword" content="">
   <link rel="stylesheet" href="../toc.html" type="text/css">
-  <title>更新内容入力フォーム</title>
+  <title>更新文書指定フォーム</title>
 </head>
 <body>
 
@@ -21,27 +21,15 @@
 </ul>
 </form>
 
-<h1>更新内容入力フォーム</h1>
+<h1>更新文書指定フォーム</h1>
 
-<form action="kpr.cgi?r=doc-update-confirm" method="POST">
+<form action="doc_update_form.cgi" method="POST">
 <dl>
-  <dt>更新する文書</dt>
-  <dd>$FULLNAME</dd>
-  <dt><label for="TITLE">タイトル</label></dt>
-  <dd><input type="text" value="" name="TITLE" id="TITLE"></dd>
-  <dt><label for="DESC">概要文</label></dt>
-  <dd><input type="text" value="" name="DESC" id="DESC"></dd>
-  <dt><label for="BODY">本文</label></dt>
-  <dd><textarea rows="16" cols="64" name="BODY" id="BODY"></textarea></dd>
+  <dt><label for="PATH">更新する文書</label></dt>
+  <dd><input type="text" value="" name="FULLNAME" id="FULLNAME"></dd>
 </dl>
 <ul>
-  <li><input type="submit" value="内容確認へ進む"></li>
-</ul>
-</form>
-
-<form action="kpr.cgi?r=doc-update-form1" method="POST">
-<ul>
-  <li><input type="submit" value="更新文書指定フォームへ戻る"></li>
+  <li><input type="hidden" name="MODE" value="input"><input type="submit" value="更新内容入力フォームへ"></li>
 </ul>
 </form>
 

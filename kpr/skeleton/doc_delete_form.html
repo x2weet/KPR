@@ -9,13 +9,13 @@
 </head>
 <body>
 
-<form action="kpr-login-form.cgi" method="POST">
+<form action="login_form.cgi" method="POST">
 <ul class="path">
   <li><input type="submit" value="ログアウト"></li>
 </ul>
 </form>
 
-<form action="kpr-menu-form.cgi" method="POST">
+<form action="menu_form.cgi" method="POST">
 <ul class="path">
   <li><input type="submit" value="メインメニュー"></li>
 </ul>
@@ -23,13 +23,13 @@
 
 <h1>文書削除用フォーム</h1>
 
-<form action="kpr.cgi?r=doc-delete-confirm" method="POST">
+<form action="doc_delete_form.cgi" method="POST">
 <dl>
-  <dt>削除する文書</dt>
+  <dt><label for="FULLNAME">削除する文書</label></dt>
   <dd><input type="text" value="" name="FULLNAME" id="FULLNAME"></dd>
 </dl>
 <ul class="command">
-  <li><input type="submit" value="削除確認手続きへ"></li>
+  <li><input type="hidden" name="MODE" value="command"><input type="submit" value="削除確認手続きへ"></li>
 </ul>
 </form>
 

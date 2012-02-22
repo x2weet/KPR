@@ -1,9 +1,9 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 #
 # KPR instance file script
 #
 #   Author: Ryota Wada
-#     Date: Fri Feb 17 23:54:19 2012. (JST)
+#     Date: Tue Feb 21 07:07:13 2012. (JST)
 #
 use strict;
 use warnings;
@@ -21,7 +21,7 @@ my %resource_file_map = (
 );
 
 my $file_templete = <<'__HERE__';
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # KPR instance file
 
@@ -34,7 +34,7 @@ use KPR;
 
 my $kpr = KPR->new(
     PARAMS => {
-        cfg_file => 'config.pl',
+        cfg_file => 'config.txt',
         resource => '__RESOURCE__',
     },
 );

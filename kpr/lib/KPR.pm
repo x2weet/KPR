@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Mon Feb 20 04:52:37 2012. (JST)
+#     Date: Wed Feb 22 07:00:40 2012. (JST)
 #
 package KPR;
 use strict;
@@ -10,9 +10,16 @@ use warnings;
 use feature qw/say switch/;
 use base 'CGI::Application';
 
+use Carp qw/carp croak/;
+
 use CGI::Application::Plugin::ConfigAuto (qw/cfg/);
 use CGI::Application::Plugin::Session;
 use CGI::Application::Plugin::Redirect;
+# use DateTime;
+# use DateTime::Format::ISO8601;
+# use DateTime::Format::W3CDTF;
+use POSIX qw/strftime/;
+use File::Spec::Functions qw/catfile splitdir splitpath catdir catpath/;
 
 sub cgiapp_init {
     my $self = shift;
@@ -45,7 +52,7 @@ sub setup {
 
     $self->param('WebsiteDirectory', $self->cfg('WebsiteDirectory'));
     # debug
-    # open my $fh, '>', 'test.txt' or die $!;
+    # open my $fh, '>', 'test.txt' or croak $!;
     # my %d = $self->cfg;
     # print $fh $self->tmpl_path();
     # close $fh;
@@ -112,8 +119,6 @@ sub kpr_doc_create {
 
     my $q = $self->query;
 
-    $q->param('MODE', "") if not defined $q->param('MODE');
-    
     given ($q->param('MODE')) {
         when ("command") {
             $self->create_document();
@@ -134,8 +139,6 @@ sub kpr_doc_update {
     my $errs = shift;
 
     my $q = $self->query;
-
-    #$q->param('MODE', "") if not defined $q->param('MODE');
 
     given ($q->param('MODE')) {
         when ("command") {
@@ -171,10 +174,10 @@ sub kpr_doc_delete {
 
     given ($q->param('MODE')) {
         when ("command") {
-            my $file_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID').'/'. $q->param('FULLNAME') . '.html';
+            my $file_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID').'/'. $q->param('ID') . '.html';
 
             unlink $file_path
-                or die $!;
+                or croak $!;
             $self->redirect('menu_form.cgi');
         }
         when ("confirm") {
@@ -200,7 +203,7 @@ sub kpr_dir_create {
         my $dir_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID').'/'. $q->param('ID');
         
         mkdir $dir_path
-            or die $!;
+            or croak $!;
         $self->redirect('menu_form.cgi');
     }
     elsif ($q->param('MODE') eq "confirm") {
@@ -230,16 +233,33 @@ sub create_document {
     my $self = shift;
     
     my $q = $self->query;
-    my $file_path = $self->cfg('WebsiteDirectory') . $self->cfg('SiteID').'/'. $q->param('FULLNAME') . '.html';
-    my $author = $self->cfg('SiteAuthor');
+    my $file_path = 
+        catfile(
+            (
+                splitdir($self->cfg('WebsiteDirectory')), $self->cfg('SiteID'), splitdir($q->param('PATH'))
+            ),
+            $q->param('ID').'.html');
+    my $author = $self->cfg('Author');
     my $desc = $q->param('DESC');
     my $keywords = "";# $q->param('KEYWORDS')
     my $title = $q->param('TITLE');
     my $body = $q->param('BODY');
+    my $navi = "";
+    my $css = q(  ).qq(<link rel="stylesheet" href=").$self->cfg('SiteStylesheet').qq(" type="text/css">).qq(\n);
+    my $links = "";
+    #    my $f = DateTime::Format::ISO8601->new();
+    my $date = strftime('%Y-%m-%d', localtime());
+    my $status = <<__HERE__;
+<dl class="status">
+  <dt>最終更新</dt>
+  <dd>$date</dd>
+</dl>
+
+__HERE__
 
     my $fh;
     open $fh, '>', $file_path 
-        or die $!;
+        or croak $! . $file_path;
     print $fh <<__HERE__;
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html lang="ja">
@@ -247,18 +267,18 @@ sub create_document {
   <meta name="author" content="$author">
   <meta name="description" content="$desc">
   <meta name="keyword" content="$keywords">
-  <link rel="stylesheet" href="" type="text/css">
-  <title>$title</title>
+${links}${css}  <title>$title</title>
 </head>
 <body>
 
-<h1>$title</h1>
+$navi<h1>$title</h1>
 
-$body
+${status}${body}
 
 </body>
 </html>
 __HERE__
+    close $fh;
     return;
 }
 

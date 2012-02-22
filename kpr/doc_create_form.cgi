@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 #
 # KPR instance file
 
@@ -11,7 +11,7 @@ use KPR;
 
 my $kpr = KPR->new(
     PARAMS => {
-        cfg_file => 'config.pl',
+        cfg_file => 'config.txt',
         resource => 'doc_create_form',
     },
 );

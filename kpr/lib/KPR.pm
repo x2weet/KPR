@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Wed Feb 22 07:00:40 2012. (JST)
+#     Date: Tue Mar 13 10:50:35 2012. (JST)
 #
 package KPR;
 use strict;
@@ -19,7 +19,9 @@ use CGI::Application::Plugin::Redirect;
 # use DateTime::Format::ISO8601;
 # use DateTime::Format::W3CDTF;
 use POSIX qw/strftime/;
-use File::Spec::Functions qw/catfile splitdir splitpath catdir catpath/;
+use File::Spec::Functions qw/catfile splitdir catdir/;
+
+use KPR::Document;
 
 sub cgiapp_init {
     my $self = shift;
@@ -49,7 +51,6 @@ sub setup {
     $self->mode_param('resource');
     $self->query->param('resource', $self->param('resource') );# overriding 
     $self->tmpl_path($self->cfg('TemplateDirectory'));
-
     $self->param('WebsiteDirectory', $self->cfg('WebsiteDirectory'));
     # debug
     # open my $fh, '>', 'test.txt' or croak $!;
@@ -147,6 +148,9 @@ sub kpr_doc_update {
         }
         when ("confirm") {
             my $t = $self->load_tmpl('doc_update_form.confirm.html');
+            my $cgi = CGI->new;
+            $cgi->charset('utf-8');
+            $q->param('BODY', $cgi->escapeHTML($q->param('BODY')));
             foreach my $key ('FULLNAME', 'TITLE', 'DESC', 'BODY') {
                 $t->param($key, $q->param($key));
             }
@@ -154,8 +158,10 @@ sub kpr_doc_update {
         }
         when ("input") {
             my $t = $self->load_tmpl('doc_update_form.input.html');
+            my %data = $self->parse_document();
+            $data{FULLNAME} = $q->param('FULLNAME');
             foreach my $key ('FULLNAME', 'TITLE', 'DESC', 'BODY') {
-                $t->param($key, $q->param($key));
+                $t->param($key, $data{$key});
             }
             return $t->output;
         }
@@ -218,27 +224,20 @@ sub kpr_dir_create {
 sub kpr_dir_delete { }
 sub kpr_dir_update { }
 
-#
-#
-#
-sub x_form { 
-    my $self = shift;
-    my $errs = shift;
-
-    my $t = $self->load_tmpl;
-    $t->param($errs) if $errs;
-    return $t->output;
-}
 sub create_document {
     my $self = shift;
     
     my $q = $self->query;
-    my $file_path = 
-        catfile(
-            (
-                splitdir($self->cfg('WebsiteDirectory')), $self->cfg('SiteID'), splitdir($q->param('PATH'))
-            ),
-            $q->param('ID').'.html');
+
+    my $file_path; 
+    if ($q->param('ID')) {
+        $file_path = catfile(
+            splitdir($self->cfg('WebsiteDirectory')), $self->cfg('SiteID'), splitdir($q->param('PATH')), $q->param('ID').'.html');
+    }
+    else {
+        $file_path = catfile(
+            splitdir($self->cfg('WebsiteDirectory')), $self->cfg('SiteID'), splitdir($q->param('FULLNAME').'.html'));
+    }
     my $author = $self->cfg('Author');
     my $desc = $q->param('DESC');
     my $keywords = "";# $q->param('KEYWORDS')
@@ -266,14 +265,14 @@ __HERE__
 <head>
   <meta name="author" content="$author">
   <meta name="description" content="$desc">
-  <meta name="keyword" content="$keywords">
-${links}${css}  <title>$title</title>
+  <meta name="keywords" content="$keywords">
+$links$css  <title>$title</title>
 </head>
 <body>
 
 $navi<h1>$title</h1>
 
-${status}${body}
+$status$body
 
 </body>
 </html>
@@ -281,9 +280,47 @@ __HERE__
     close $fh;
     return;
 }
+sub parse_document {
+    my $self = shift;
+    
+    my $q = $self->query;
+
+    my $file_path = 
+        catfile(
+            splitdir($self->cfg('WebsiteDirectory')), $self->cfg('SiteID'), splitdir($q->param('FULLNAME').'.html')
+        );
+
+    my $d = KPR::Document->new();
+    my $doc = "";
+    my $fh;
+    open $fh, '<', $file_path
+        or croak $!;
+    while (my $line = <$fh>) {
+        $doc .= $line;
+    }
+    close $fh;
+    
+    $d->parse($doc);
+    $d->eof;
+    
+    my %data;
+    $data{TITLE} = $d->findnodes('/html/head/title')->to_literal;
+    $data{AUTHOR} = $d->findnodes('/html/head/meta[@name="author"]/@content')->to_literal;
+    $data{DESC} = $d->findnodes('/html/head/meta[@name="description"]/@content')->to_literal;
+    my $cgi = CGI->new;
+    $cgi->charset('utf-8');
+    $data{BODY} = $cgi->escapeHTML(
+        join "", map {$_->as_HTML} $d->findnodes('/html/body/h1/following-sibling::*[@class!="status"]'));
+    $data{LASTMF} = $d->findnodes('/html/body//dl[@class="status"]/dd')->to_literal;
+
+    return %data;
+}
 
 
 
+#
+#
+#
 sub form_process {
     my $c = shift;
 

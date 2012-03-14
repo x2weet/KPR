@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Tue Mar 13 10:50:35 2012. (JST)
+#     Date: Wed Mar 14 10:38:12 2012. (JST)
 #
 package KPR;
 use strict;
@@ -150,7 +150,7 @@ sub kpr_doc_update {
             my $t = $self->load_tmpl('doc_update_form.confirm.html');
             my $cgi = CGI->new;
             $cgi->charset('utf-8');
-            $q->param('BODY', $cgi->escapeHTML($q->param('BODY')));
+            # $q->param('BODY', $cgi->escapeHTML($q->param('BODY')));
             foreach my $key ('FULLNAME', 'TITLE', 'DESC', 'BODY') {
                 $t->param($key, $q->param($key));
             }
@@ -260,12 +260,12 @@ __HERE__
     open $fh, '>', $file_path 
         or croak $! . $file_path;
     print $fh <<__HERE__;
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html lang="ja">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="ja" lang="ja">
 <head>
-  <meta name="author" content="$author">
-  <meta name="description" content="$desc">
-  <meta name="keywords" content="$keywords">
+  <meta name="author" content="$author" />
+  <meta name="description" content="$desc" />
+  <meta name="keywords" content="$keywords" />
 $links$css  <title>$title</title>
 </head>
 <body>

@@ -1,0 +1,12 @@
+<!--
+  KPR.dtd
+
+     Author: Ryota Wada
+       Date: Wed Mar 14 12:28:37 2012. (JST)
+
+-->
+
+<!ELEMENT html - -  (head,body)>
+<!ELEMENT head - -  (meta*,link*,title)>
+<!ELEMENT body - -  (%list0;,%heading0;,%bodycontents;)>
+

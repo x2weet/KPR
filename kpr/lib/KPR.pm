@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Wed Mar 14 10:38:12 2012. (JST)
+#     Date: Wed Mar 14 10:50:14 2012. (JST)
 #
 package KPR;
 use strict;
@@ -244,7 +244,7 @@ sub create_document {
     my $title = $q->param('TITLE');
     my $body = $q->param('BODY');
     my $navi = "";
-    my $css = q(  ).qq(<link rel="stylesheet" href=").$self->cfg('SiteStylesheet').qq(" type="text/css">).qq(\n);
+    my $css = q(  ).qq(<link rel="stylesheet" href=").$self->cfg('SiteStylesheet').qq(" type="text/css" />).qq(\n);
     my $links = "";
     #    my $f = DateTime::Format::ISO8601->new();
     my $date = strftime('%Y-%m-%d', localtime());

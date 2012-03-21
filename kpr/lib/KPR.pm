@@ -2,7 +2,7 @@
 # KPR.pm
 #
 #   Author: Ryota Wada
-#     Date: Wed Mar 14 10:50:14 2012. (JST)
+#     Date: Wed Mar 21 15:56:44 2012. (JST)
 #
 package KPR;
 use strict;
@@ -52,12 +52,6 @@ sub setup {
     $self->query->param('resource', $self->param('resource') );# overriding 
     $self->tmpl_path($self->cfg('TemplateDirectory'));
     $self->param('WebsiteDirectory', $self->cfg('WebsiteDirectory'));
-    # debug
-    # open my $fh, '>', 'test.txt' or croak $!;
-    # my %d = $self->cfg;
-    # print $fh $self->tmpl_path();
-    # close $fh;
-
 }
 
 sub kpr_login {
@@ -125,9 +119,6 @@ sub kpr_doc_create {
             $self->create_document();
             $self->redirect('menu_form.cgi');
         }
-        when ("confirm") {
-            # confirm routine
-        }
         default {
             my $t = $self->load_tmpl;
             $t->param($errs) if $errs;
@@ -145,16 +136,6 @@ sub kpr_doc_update {
         when ("command") {
             $self->create_document();
             $self->redirect('menu_form.cgi');
-        }
-        when ("confirm") {
-            my $t = $self->load_tmpl('doc_update_form.confirm.html');
-            my $cgi = CGI->new;
-            $cgi->charset('utf-8');
-            # $q->param('BODY', $cgi->escapeHTML($q->param('BODY')));
-            foreach my $key ('FULLNAME', 'TITLE', 'DESC', 'BODY') {
-                $t->param($key, $q->param($key));
-            }
-            return $t->output;
         }
         when ("input") {
             my $t = $self->load_tmpl('doc_update_form.input.html');
@@ -186,9 +167,6 @@ sub kpr_doc_delete {
                 or croak $!;
             $self->redirect('menu_form.cgi');
         }
-        when ("confirm") {
-            # confirm routine
-        }
         default {
             my $t = $self->load_tmpl;
             $t->param($errs) if $errs;
@@ -211,9 +189,6 @@ sub kpr_dir_create {
         mkdir $dir_path
             or croak $!;
         $self->redirect('menu_form.cgi');
-    }
-    elsif ($q->param('MODE') eq "confirm") {
-        # confirm routine
     }
     else { # default
         my $t = $self->load_tmpl;
@@ -302,46 +277,20 @@ sub parse_document {
     
     $d->parse($doc);
     $d->eof;
+
+    my $cgi = CGI->new;
+    $cgi->charset('utf-8');
     
     my %data;
     $data{TITLE} = $d->findnodes('/html/head/title')->to_literal;
     $data{AUTHOR} = $d->findnodes('/html/head/meta[@name="author"]/@content')->to_literal;
     $data{DESC} = $d->findnodes('/html/head/meta[@name="description"]/@content')->to_literal;
-    my $cgi = CGI->new;
-    $cgi->charset('utf-8');
     $data{BODY} = $cgi->escapeHTML(
         join "", map {$_->as_HTML} $d->findnodes('/html/body/h1/following-sibling::*[@class!="status"]'));
     $data{LASTMF} = $d->findnodes('/html/body//dl[@class="status"]/dd')->to_literal;
 
     return %data;
 }
-
-
-
-#
-#
-#
-sub form_process {
-    my $c = shift;
-
-    # Validate the form against a profile. If it fails validation, re-display
-    # the form for the user with their data pre-filled and the errors highlighted. 
-    my ($results, $err_page) = $c->check_rm('form_display','_form_profile');
-    return $err_page if $err_page; 
-
-    return $c->forward('form_success');   
-}
-
-# Return a Data::FormValidator profile
-sub _form_profile {
-    my $c = shift;
-    return {
-        required => 'email',
-    };
-}
-
-sub form_success { } 
-
 
 sub cgiapp_prerun {
     my $self = shift;
@@ -356,11 +305,6 @@ sub cgiapp_prerun {
     else {
         $self->header_add( -type => 'text/html; charset=UTF-8' );
     }
-}
-
-sub cgiapp_postrun {
-    my $self = shift;
-
 }
 
 1;
